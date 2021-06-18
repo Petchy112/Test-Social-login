@@ -8,12 +8,35 @@
 
 <body>
     <script>
-        async function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
-            // document.getElementById('status').innerHTML =
-            //     'Thanks for logging in, ' + await response.authResponse.accessToken;                 // The current login status of the person.
-            if (response.status === 'connected') {   // Logged into your webpage and Facebook.
-                await testAPI();
-            } else {                                 // Not logged into your webpage or we are unable to tell.
+        function redirect() {
+            var url = "/api/fbdata";
+            window.location.pathname = url;
+        }
+        async function statusChangeCallback(response) {
+            if (response.status === 'connected') {
+                console.log(response, 'res')
+                const dataRes = await fetch("http://localhost:99/api/fb", {
+                    method: 'POST',
+                    headers: {
+                        authorization: 'Bearer ' + response.authResponse.accessToken
+                    }
+
+                })
+                return console.log(dataRes)
+
+                // if (dataRes.ok) {
+                //     console.log(dataRes)
+                //     const jsonValue = await dataRes.json(); // Get JSON value from the response body
+                //     return Promise.resolve(jsonValue);
+                //     console.log(jsonValue, 'res')
+                // }
+
+                // await redirect()
+
+                // document.getElementById('status').innerHTML =
+                //     'Thanks for logging in, ' + await response.authResponse.accessToken;
+
+            } else {
                 document.getElementById('status').innerHTML = 'Please log ' +
                     'into this webpage.';
             }
@@ -33,16 +56,9 @@
                 xfbml: true,                     // Parse social plugins on this webpage.
                 version: 'v11.0'           // Use this Graph API version for this call.
             });
-
         };
 
-        async function testAPI() {                      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
-            FB.api('/me', 'GET', { "fields": "id,first_name,last_name,email" }, async function (response) {
-                document.getElementById('status').innerHTML = 'Name = ' + await response.first_name + " " + await response.last_name + " " +
-                    'Email = ' + await response.email
-            }
-            );
-        }
+
 
     </script>
 
@@ -56,7 +72,7 @@
 
     <div class="fb-login-button" data-width="300" data-size="large" data-button-type="continue_with"
         data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" scope="public_profile,email"
-        onlogin="checkLoginState"></div>
+        onlogin="statusChangeCallback"></div>
 
     <!-- <fb:login-button scope="public_profile,email" onlogin="checkLoginState">
     </fb:login-button> -->

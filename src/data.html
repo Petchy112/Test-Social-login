@@ -3,14 +3,16 @@
 
 <head>
     <title>Facebook Data</title>
+    <meta name="google-signin-client_id"
+        content="871927269871-hg4c69m170fdd8o8u90gfhbmr93gpstn.apps.googleusercontent.com">
 </head>
 
 <body>
     <div id="result">
 
     </div>
+
+    <div class="g-signin2" data-width="300" data-longtitle="false"></div>
 </body>
-<script>
-    console.log(localStorage.getItem("firstname"))
-    document.getElementById("result").innerHTML = localStorage.getItem("firstname");
-</script>
+
+<script src="https://apis.google.com/js/platform.js"></script>

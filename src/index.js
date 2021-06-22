@@ -1,18 +1,23 @@
 const express = require('express')
 const app = express();
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const routes = require('./router/index')
-const port = 99;
+const config = require('./config')
+const database = require('./database')
+
+
+app.use(express.urlencoded({ extended: true }));
+
+const start = async () => {
+    await database()
+}
+start()
 
 app.use(cors());
 
 routes(app)
 
-
-
-
-app.listen(port, () => {
-    console.log(`listening at http://localhost:${port}`)
+app.listen(config.port, () => {
+    console.log(`listening at http://localhost:${config.port}`)
 })
 

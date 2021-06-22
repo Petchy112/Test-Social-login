@@ -4,84 +4,75 @@
 <head>
     <title>Facebook Login JavaScript Example</title>
     <meta charset="UTF-8">
+    <meta name="google-signin-client_id"
+        content="871927269871-hg4c69m170fdd8o8u90gfhbmr93gpstn.apps.googleusercontent.com">
 </head>
+<script>
+    function redirect(token) {
+        var url = "/api/fbdata?token=" + token;
+        window.location.pathname = url;
+    }
+    async function statusChangeCallback(response) {
+        if (response.status === 'connected') {
+            console.log(response, 'res')
+            const dataRes = await fetch("http://localhost:99/api/fb", {
+                method: 'POST',
+                headers: {
+                    authorization: 'Bearer ' + response.authResponse.accessToken
+                }
+            })
+            console.log(response.authResponse.accessToken, 'tew')
+
+
+            await redirect(response.authResponse.accessToken)
+
+
+            // document.getElementById('status').innerHTML =
+            //     'Thanks for logging in, ' + await response.authResponse.accessToken;
+
+        } else {
+            document.getElementById('status').innerHTML = 'Please log ' +
+                'into this webpage.';
+        }
+    }
+    async function onSignIn(googleUser) {
+        var profile = await googleUser.getAuthResponse();
+        await fetch("http://localhost:99/api/google", {
+            method: 'POST',
+            headers: {
+                authorization: profile.id_token
+            }
+        })
+
+
+    }
+
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: '1218076828653725',
+            cookie: true,                     // Enable cookies to allow the server to access the session.
+            xfbml: true,                     // Parse social plugins on this webpage.
+            version: 'v11.0'           // Use this Graph API version for this call.
+        });
+    };
+
+
+
+</script>
+
+
 
 <body>
-    <script>
-        function redirect() {
-            var url = "/api/fbdata";
-            window.location.pathname = url;
-        }
-        async function statusChangeCallback(response) {
-            if (response.status === 'connected') {
-                console.log(response, 'res')
-                const dataRes = await fetch("http://localhost:99/api/fb", {
-                    method: 'POST',
-                    headers: {
-                        authorization: 'Bearer ' + response.authResponse.accessToken
-                    }
-
-                })
-                return console.log(dataRes)
-
-                // if (dataRes.ok) {
-                //     console.log(dataRes)
-                //     const jsonValue = await dataRes.json(); // Get JSON value from the response body
-                //     return Promise.resolve(jsonValue);
-                //     console.log(jsonValue, 'res')
-                // }
-
-                // await redirect()
-
-                // document.getElementById('status').innerHTML =
-                //     'Thanks for logging in, ' + await response.authResponse.accessToken;
-
-            } else {
-                document.getElementById('status').innerHTML = 'Please log ' +
-                    'into this webpage.';
-            }
-        }
-
-        function checkLoginState() {               // Called when a person is finished with the Login Button.
-            FB.getLoginStatus(function (response) {   // See the onlogin handler
-                statusChangeCallback(response);
-            });
-        }
-
-
-        window.fbAsyncInit = function () {
-            FB.init({
-                appId: '1218076828653725',
-                cookie: true,                     // Enable cookies to allow the server to access the session.
-                xfbml: true,                     // Parse social plugins on this webpage.
-                version: 'v11.0'           // Use this Graph API version for this call.
-            });
-        };
-
-
-
-    </script>
-
-
-    <!-- The JS SDK Login Button -->
-
-    <!-- <script async defer crossorigin="anonymous"
-        src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v11.0&appId=1218076828653725&autoLogAppEvents=1"
-        nonce="sXoGBpM7"></script> -->
-
-
     <div class="fb-login-button" data-width="300" data-size="large" data-button-type="continue_with"
         data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" scope="public_profile,email"
         onlogin="statusChangeCallback"></div>
 
-    <!-- <fb:login-button scope="public_profile,email" onlogin="checkLoginState">
-    </fb:login-button> -->
+    <div class="g-signin2" data-width="300" data-longtitle="true" data-onsuccess="onSignIn">
 
-    <div id="status">
-    </div>
 
-    <!-- Load the JS SDK asynchronously -->
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+        <!-- Load the JS SDK asynchronously -->
+        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+        <script src="https://apis.google.com/js/platform.js"></script>
 </body>
 
 </html>
